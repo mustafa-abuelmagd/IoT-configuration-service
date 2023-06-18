@@ -8,7 +8,7 @@ import java.util.Objects;
 @Table(
         name = "iotDevice",
         uniqueConstraints = {
-                @UniqueConstraint(name="device_unique_pin", columnNames = "pin_number")
+                @UniqueConstraint(name="device_unique_pin", columnNames = "pinCode")
         }
 )
 public class IoTDevice {
@@ -39,28 +39,28 @@ public class IoTDevice {
     private int temp;
 
     @Column(
-            name = "pin_number",
+            name = "pinCode",
             nullable = false,
-//            unique = true,
-            columnDefinition = "VARCHAR(7)"
+            columnDefinition = "VARCHAR(7)",
+            updatable = false
     )
-    private long pin_number;
+    private long pinCode;
 
     public IoTDevice() {}
 
-    public IoTDevice(String status, int temp, long pin_number) {
+    public IoTDevice(String status, int temp, long pinCode) {
 
         this.status = status;
         this.temp = temp;
-        this.pin_number = pin_number;
+        this.pinCode = pinCode;
     }
 
-    public IoTDevice(Long id, String status, int temp, long pin_number) {
+    public IoTDevice(Long id, String status, int temp, long pinCode) {
 
         this.id = id;
         this.status = status;
         this.temp = temp;
-        this.pin_number = pin_number;
+        this.pinCode = pinCode;
     }
 
 
@@ -85,15 +85,15 @@ public class IoTDevice {
     }
 
     public void setTemp(int temp) {
-        temp = temp;
+        this.temp = temp;
     }
 
-    public long getPin_number() {
-        return pin_number;
+    public long getPinCode() {
+        return pinCode;
     }
 
-    public void setPin_number(long pin_number) {
-        this.pin_number = pin_number;
+    public void setPinCode(long pinCode) {
+        this.pinCode = pinCode;
     }
 
     @Override
@@ -102,7 +102,7 @@ public class IoTDevice {
                 "id=" + id +
                 ", status='" + status + '\'' +
                 ", temp=" + temp +
-                ", pin_number=" + pin_number +
+                ", pinCode=" + pinCode +
                 '}';
     }
     @Override
@@ -110,12 +110,12 @@ public class IoTDevice {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         IoTDevice ioTDevice = (IoTDevice) o;
-        return temp == ioTDevice.temp && pin_number == ioTDevice.pin_number && Objects.equals(id, ioTDevice.id) && Objects.equals(status, ioTDevice.status);
+        return temp == ioTDevice.temp && pinCode == ioTDevice.pinCode && Objects.equals(id, ioTDevice.id) && Objects.equals(status, ioTDevice.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, status, temp, pin_number);
+        return Objects.hash(id, status, temp, pinCode);
     }
 
 

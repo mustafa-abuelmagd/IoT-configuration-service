@@ -1,4 +1,5 @@
 package com._vois.iotconfigurationservice.devices;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -8,8 +9,8 @@ import java.util.List;
 public class IoTDeviceController {
     private final IoTDeviceService service;
 
-    public IoTDeviceController(IoTDeviceService IoTDeviceService) {
-        this.service = IoTDeviceService;
+    public IoTDeviceController(IoTDeviceService ioTDeviceService) {
+        this.service = ioTDeviceService;
     }
 
     @GetMapping("/")
@@ -35,6 +36,11 @@ public class IoTDeviceController {
     @DeleteMapping("/{id}")
     void deleteOne(@PathVariable Long id) {
         service.deleteOne(id);
+    }
+
+    @PostMapping("/configure_device")
+    IoTDevice configureDevice(@RequestBody int pinCode) {
+        return service.configureDevice(pinCode);
     }
 
 
