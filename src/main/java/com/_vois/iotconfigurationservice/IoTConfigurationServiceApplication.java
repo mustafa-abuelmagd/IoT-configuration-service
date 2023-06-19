@@ -9,6 +9,11 @@ public class IoTConfigurationServiceApplication {
     public static void main(String[] args) {
 
         SpringApplication.run(IoTConfigurationServiceApplication.class, args);
+
+
     }
 
+
 }
+
+

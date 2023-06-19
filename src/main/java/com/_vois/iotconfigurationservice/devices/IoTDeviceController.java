@@ -24,22 +24,22 @@ public class IoTDeviceController {
     }
 
     @GetMapping("/{id}")
-    IoTDevice getOne(@PathVariable Long id) {
+    IoTDevice getOne(@PathVariable long id) {
         return service.getOne(id);
     }
 
     @PutMapping("/{id}")
-    IoTDevice updateOne(@RequestBody IoTDevice newDevice, @PathVariable Long id) {
+    IoTDevice updateOne(@RequestBody IoTDevice newDevice, @PathVariable long id) {
         return service.updateOne(newDevice, id);
     }
 
     @DeleteMapping("/{id}")
-    void deleteOne(@PathVariable Long id) {
+    void deleteOne(@PathVariable long id) {
         service.deleteOne(id);
     }
 
-    @PostMapping("/configure_device")
-    IoTDevice configureDevice(@RequestBody int pinCode) {
+    @PostMapping("/configure_device/{pinCode}")
+    IoTDevice configureDevice(@PathVariable int pinCode) {
         return service.configureDevice(pinCode);
     }
 
