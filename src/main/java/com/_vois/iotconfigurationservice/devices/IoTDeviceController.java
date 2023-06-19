@@ -2,6 +2,7 @@ package com._vois.iotconfigurationservice.devices;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -15,7 +16,11 @@ public class IoTDeviceController {
 
     @GetMapping("/")
     List<IoTDevice> all() {
-        return service.getAll();
+
+        List<IoTDevice> devices = service.getAll();
+        devices.sort(Comparator.comparingInt(IoTDevice::getPinCode));
+        return devices;
+
     }
 
     @PostMapping("/")
