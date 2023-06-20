@@ -43,9 +43,9 @@ public class IoTDeviceController {
         service.deleteOne(id);
     }
 
-    @PostMapping("/configure_device/{pinCode}")
-    IoTDevice configureDevice(@PathVariable int pinCode) {
-        return service.configureDevice(pinCode);
+    @PostMapping("/configure_device/{id}")
+    IoTDevice configureDevice(@PathVariable long id) {
+        return service.configureDevice(id);
     }
 
 

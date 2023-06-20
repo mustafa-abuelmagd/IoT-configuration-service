@@ -23,7 +23,6 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-rest'
-//    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.junit.vintage:junit-vintage-engine:5.9.3'
     compileOnly 'org.projectlombok:lombok'
@@ -35,16 +34,14 @@ dependencies {
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation group: 'junit', name: 'junit', version: '4.13.2'
     testImplementation group: 'org.mock-server', name: 'mockserver-netty', version: '5.15.0'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.3.1'
 
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.hibernate.orm:hibernate-community-dialects:6.1.7.Final'
     implementation 'javax.persistence:javax.persistence-api:2.2'
-//    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '3.1.0'
     implementation group: 'com.mysql', name: 'mysql-connector-j', version: '8.0.33'
     implementation group: 'com.healthmarketscience.sqlbuilder', name: 'sqlbuilder', version: '3.0.2'
-//    implementation group: 'org.jacoco', name: 'jacoco-maven-plugin', version: '0.8.10'
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.3.1'
 
 
 

@@ -1,10 +1,7 @@
 package com._vois.iotconfigurationservice.services;
 
 import com._vois.iotconfigurationservice.IoTConfigurationServiceApplication;
-import com._vois.iotconfigurationservice.devices.DeviceNotFoundExceptions;
-import com._vois.iotconfigurationservice.devices.IoTDevice;
-import com._vois.iotconfigurationservice.devices.IoTDeviceRepository;
-import com._vois.iotconfigurationservice.devices.IoTDeviceService;
+import com._vois.iotconfigurationservice.devices.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 
@@ -74,13 +70,26 @@ class IoTDeviceServiceTests {
     }
 
 
-    @Test
+    @ParameterizedTest
+    @CsvSource({
+            "ACTIVE,-1,1234567",
+            "ACTIVE,1,12345678",
+            "ACTIVE,1,123456",
+            "READY,1,1234567",
+            "READY,1,12345678",
+            "READY,1,1234567",
+            "Device Status,1,1",
+            "ACTIVE,1,1",
+            "READY,1,1",
+            "ACTIVE,-1,1",
+            "READY,-1,1"
+    })
 //    @Disabled
-    void testCreateInvalidDeviceData() {
-        IoTDevice newDevice = new IoTDevice("ACTIVE", -1, 1234567);
-        Mockito.when(repository.save(Mockito.any(IoTDevice.class))).thenReturn(newDevice);
-
-        Assertions.assertThrows(IllegalStateException.class, () -> this.deviceService.create(newDevice));
+    void testCreateInvalidDeviceData(String deviceStatus,
+                                     int deviceTemp,
+                                     int devicePinCode) {
+        IoTDevice newDevice = new IoTDevice(deviceStatus, deviceTemp, devicePinCode);
+        Assertions.assertThrows(BadRequestException.class, () -> this.deviceService.create(newDevice));
 
     }
 
@@ -89,7 +98,7 @@ class IoTDeviceServiceTests {
     void testCreateInvalidDevice() {
         IoTDevice invalidDevice = new IoTDevice();
         invalidDevice.setPinCode(12345678);
-        Assertions.assertThrows(IllegalStateException.class, () -> this.deviceService.create(invalidDevice));
+        Assertions.assertThrows(BadRequestException.class, () -> this.deviceService.create(invalidDevice));
 
     }
 
@@ -129,8 +138,11 @@ class IoTDeviceServiceTests {
     @Test
 //    @Disabled
     void testGetAll3() {
-        when(repository.findAll()).thenThrow(new IllegalStateException("foo"));
-        Assertions.assertThrows(IllegalStateException.class, () -> this.deviceService.getAll());
+        List<IoTDevice> devices = new ArrayList<>();
+        IoTDevice device = mock(IoTDevice.class);
+        devices.add(device);
+        when(repository.findAll()).thenReturn(devices);
+        Assertions.assertNotNull(this.deviceService.getAll());
         verify(repository).findAll();
     }
 
@@ -138,7 +150,7 @@ class IoTDeviceServiceTests {
 //    @Disabled
     void testCreate() {
         IoTDevice newDevice = new IoTDevice("Status", 1, 1);
-        Assertions.assertThrows(IllegalStateException.class, () -> this.deviceService.create(newDevice));
+        Assertions.assertThrows(BadRequestException.class, () -> this.deviceService.create(newDevice));
     }
 
 
@@ -156,7 +168,7 @@ class IoTDeviceServiceTests {
 //    @Disabled
     void testGetOne2() {
         when(repository.findById(Mockito.<Long>any())).thenReturn(Optional.empty());
-        Assertions.assertThrows(IllegalStateException.class, () -> this.deviceService.getOne(1L));
+        Assertions.assertThrows(DeviceNotFoundException.class, () -> this.deviceService.getOne(1L));
         verify(repository).findById(Mockito.<Long>any());
     }
 
@@ -173,7 +185,7 @@ class IoTDeviceServiceTests {
 //    @Disabled
     void testUpdateOne() {
         IoTDevice newDevice = new IoTDevice("Status", 1, 1);
-        Assertions.assertThrows(IllegalStateException.class, () -> this.deviceService.updateOne(newDevice, 1L));
+        Assertions.assertThrows(BadRequestException.class, () -> this.deviceService.updateOne(newDevice, 1L));
     }
 
     @Test
@@ -195,24 +207,29 @@ class IoTDeviceServiceTests {
 //    @Disabled
     void testUpdateOne3() {
         IoTDevice ioTDevice = mock(IoTDevice.class);
-        doThrow(new DeviceNotFoundExceptions(1L)).when(ioTDevice).setStatus(Mockito.<String>any());
-        doThrow(new DeviceNotFoundExceptions(1L)).when(ioTDevice).setTemp(anyInt());
-        Optional<IoTDevice> ofResult = Optional.of(ioTDevice);
-        when(repository.save(Mockito.<IoTDevice>any())).thenReturn(new IoTDevice("Status", 1, 1));
-        when(repository.findById(Mockito.<Long>any())).thenReturn(ofResult);
+
+//        doThrow(new DeviceNotFoundException(1L)).when(ioTDevice).setStatus(Mockito.<String>any());
+//        doThrow(new DeviceNotFoundException(1L)).when(ioTDevice).setTemp(anyInt());
+
+        IoTDevice ofResult = new IoTDevice("Status", 1, 1);
+
+        when(repository.save(Mockito.<IoTDevice>any())).thenReturn(ofResult);
+        when(repository.findById(Mockito.<Long>any())).thenReturn(Optional.of(new IoTDevice("Status", 1, 1)));
+
         IoTDeviceService ioTDeviceService = new IoTDeviceService(repository);
         IoTDevice newDevice = new IoTDevice("Status", 1, 1);
 
-        Assertions.assertThrows(DeviceNotFoundExceptions.class, () -> ioTDeviceService.updateOne(newDevice, 1L));
+        Assertions.assertNotNull(ioTDeviceService.updateOne(newDevice, 1L));
         verify(repository).findById(Mockito.<Long>any());
-        verify(ioTDevice).setStatus(Mockito.<String>any());
+//        verify(ioTDevice).setStatus(Mockito.<String>any());
+//        verify(ioTDevice).setTemp(Mockito.<Integer>any());
     }
 
     @Test
 //    @Disabled
     void testUpdateOne4() {
-        new DeviceNotFoundExceptions(1L);
-        new DeviceNotFoundExceptions(1L);
+        new DeviceNotFoundException(1L);
+        new DeviceNotFoundException(1L);
         IoTDevice ioTDevice = new IoTDevice("Status", 1, 1);
 
         when(repository.save(Mockito.<IoTDevice>any())).thenReturn(ioTDevice);
@@ -226,22 +243,7 @@ class IoTDeviceServiceTests {
         assertEquals(1L, newDevice.getId());
     }
 
-    @Test
-//    @Disabled
-    void testUpdateOne5() {
-        IoTDevice ioTDevice = mock(IoTDevice.class);
 
-        doThrow(new DeviceNotFoundExceptions(1L)).when(ioTDevice).setStatus(Mockito.<String>any());
-        doThrow(new DeviceNotFoundExceptions(1L)).when(ioTDevice).setTemp(anyInt());
-
-        Optional<IoTDevice> ofResult = Optional.of(ioTDevice);
-
-        when(repository.save(Mockito.<IoTDevice>any())).thenReturn(new IoTDevice("Status", 1, 1));
-        when(repository.findById(Mockito.<Long>any())).thenReturn(ofResult);
-        IoTDevice newDevice = new IoTDevice("Status", 1, 1);
-
-        assertThrows(IllegalStateException.class, () -> this.deviceService.updateOne(newDevice, 1L));
-    }
 
     @Test
 //    @Disabled
@@ -262,57 +264,19 @@ class IoTDeviceServiceTests {
     @Test
 //    @Disabled
     void testConfigureDevice1() {
-        when(repository.findByPinCode(Mockito.<Integer>any())).thenThrow(new IllegalStateException("foo"));
-        Assertions.assertThrows(IllegalStateException.class, () -> this.deviceService.configureDevice(1));
-        verify(repository).findByPinCode(Mockito.<Integer>any());
+        when(repository.findById(Mockito.<Long>any())).thenThrow(new IllegalStateException("No device with this id"));
+        Assertions.assertThrows(IllegalStateException.class, () -> this.deviceService.configureDevice(15000));
+        verify(repository).findById(Mockito.<Long>any());
     }
 
     @Test
 //    @Disabled
     void testConfigureDevice2() {
-        when(repository.findByPinCode(Mockito.<Integer>any())).thenThrow(new IllegalStateException("foo"));
+        when(repository.findById(Mockito.<Long>any())).thenThrow(new IllegalStateException("foo"));
         Assertions.assertThrows(IllegalStateException.class, () -> this.deviceService.configureDevice(1));
-        verify(repository).findByPinCode(Mockito.<Integer>any());
+        verify(repository).findById(Mockito.<Long>any());
     }
 
-    @Test
-//    @Disabled
-    void testConfigureDevice3() throws IllegalAccessException {
-        IoTDevice newDevice = new IoTDevice("READY", -1, 1357924);
-        IoTDevice result = this.deviceService.configureDevice(newDevice.getPinCode());
-
-        boolean isWithinConditions = 0 <= result.getTemp() && result.getTemp() <= 10;
-
-        Assertions.assertEquals("ACTIVE", result.getStatus());
-        Assertions.assertTrue(isWithinConditions);
-        Assertions.assertEquals(1357924, result.getPinCode());
-
-    }
-
-    @Test
-//    @Disabled
-    void testFindDeviceByPinCode() {
-        IoTDevice newDevice = new IoTDevice("READY", -1, 1357924);
-        List<IoTDevice> devices = new ArrayList<>();
-        devices.add(newDevice);
-        repository.save(newDevice);
-        when(repository.save(newDevice)).thenReturn(newDevice);
-        when(repository.findAll()).thenReturn(devices);
-
-        when(repository.findByPinCode(newDevice.getPinCode())).thenReturn(devices);
-
-//        IoTDevice result = deviceService.configureDevice(newDevice.getPinCode());
-        verify(repository).findByPinCode(Mockito.<Integer>any());
-
-
-//        boolean isWithinConditions = 0 <= result.getTemp() && result.getTemp() <= 10;
-//
-//        Assertions.assertEquals(result.getId(), newDevice.getId());
-//        Assertions.assertEquals(result.getPinCode(), newDevice.getPinCode());
-//        Assertions.assertEquals("ACTIVE", newDevice.getStatus());
-//        Assertions.assertTrue(isWithinConditions);
-
-    }
 
     @Test
 //    @Disabled

@@ -10,6 +10,4 @@ import java.util.List;
 @Repository
 public
 interface IoTDeviceRepository extends JpaRepository<IoTDevice, Long> {
-    @Query("SELECT d FROM IoTDevice d WHERE d.pinCode = :pinCode")
-    List<IoTDevice> findByPinCode(@Param("pinCode") int pinCode);
 }

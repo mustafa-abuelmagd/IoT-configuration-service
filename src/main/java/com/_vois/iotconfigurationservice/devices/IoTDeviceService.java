@@ -22,7 +22,7 @@ public class IoTDeviceService {
         if (!isValidPinCode(newDevice.getPinCode())
                 || !isValidDeviceUpdate(newDevice.getStatus(), newDevice.getTemp())) {
 
-            throw new IllegalStateException("Provided data is not correct!");
+            throw new BadRequestException("Provided data is not correct!");
         }
 
         return repository.save(newDevice);
@@ -30,15 +30,15 @@ public class IoTDeviceService {
 
     public IoTDevice getOne(Long id) {
         if (repository.findById(id).isEmpty()) {
-            throw new IllegalStateException("No device exists with this ID");
+            throw new DeviceNotFoundException(id);
         }
-        return repository.findById(id).orElseThrow(() -> new DeviceNotFoundExceptions(id));
+        return repository.findById(id).orElseThrow(() -> new DeviceNotFoundException(id));
     }
 
     @Transactional
     public IoTDevice updateOne(IoTDevice newDevice, Long id) {
         if (!isValidDeviceUpdate(newDevice.getStatus(), newDevice.getTemp())) {
-            throw new IllegalStateException("Provided data update is not valid!");
+            throw new BadRequestException("Provided data update is not valid!");
         }
         return repository.findById(id).map(device -> {
             device.setStatus(newDevice.getStatus());
@@ -58,15 +58,13 @@ public class IoTDeviceService {
     // Using a device pinCode, its status is set to ACTIVE and its temperature is set to a
     // random number between 0 and 10
     @Transactional
-    public IoTDevice configureDevice(int pinCode) {
-        List<IoTDevice> devices = repository.findByPinCode(pinCode);
-        if(!devices.isEmpty()){
-            IoTDevice device = devices.get(0);
+    public IoTDevice configureDevice(long id) {
+        return repository.findById(id).map(device ->{
             device.setStatus("ACTIVE");
             device.setTemp(generateTemp());
             return device;
-        }
-        return null;
+        }).orElseThrow();
+
 
     }
 
