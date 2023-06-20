@@ -16,4 +16,12 @@ import java.util.List;
 public class ListResponse {
     private List<IoTDevice> content;
     private long totalElements;
+
+    public List<IoTDevice> getContent() {
+        return content;
+    }
+
+    public long getTotalElements() {
+        return totalElements;
+    }
 }

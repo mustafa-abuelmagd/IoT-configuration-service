@@ -1,5 +1,6 @@
 package com._vois.iotconfigurationservice.devices.Controllers;
 
+import com._vois.iotconfigurationservice.devices.DTO.DeviceResponse;
 import com._vois.iotconfigurationservice.devices.DTO.ListResponse;
 import com._vois.iotconfigurationservice.devices.Errors.BadRequestException;
 import com._vois.iotconfigurationservice.devices.Models.IoTDevice;
@@ -44,18 +45,38 @@ public class IoTDeviceController {
     }
 
     @PostMapping("/")
-    public IoTDevice create(@RequestBody IoTDevice device) {
-        return service.create(device);
+    public ResponseEntity create(@RequestBody IoTDevice device) {
+        try {
+            DeviceResponse response = new DeviceResponse();
+            response.setContent(service.create(device));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception exception) {
+            return handleBadRequest(new BadRequestException("Provided data is not correct!"));
+        }
+
     }
 
     @GetMapping("/{id}")
-    public IoTDevice getOne(@PathVariable long id) {
-        return service.getOne(id);
+    public ResponseEntity getOne(@PathVariable long id) {
+        try {
+            DeviceResponse response = new DeviceResponse();
+            response.setContent(service.getOne(id));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception exception) {
+            return handleBadRequest(new BadRequestException("Provided data is not correct!"));
+        }
     }
 
+
     @PutMapping("/{id}")
-    public IoTDevice updateOne(@RequestBody IoTDevice newDevice, @PathVariable long id) {
-        return service.updateOne(newDevice, id);
+    public ResponseEntity updateOne(@RequestBody IoTDevice newDevice, @PathVariable long id) {
+        try {
+            DeviceResponse response = new DeviceResponse();
+            response.setContent(service.updateOne(newDevice, id));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception exception) {
+            return handleBadRequest(new BadRequestException("Provided data is not correct!"));
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -64,8 +85,14 @@ public class IoTDeviceController {
     }
 
     @PostMapping("/configure_device/{id}")
-    public IoTDevice configureDevice(@PathVariable Long id) {
-        return service.configureDevice(id);
+    public ResponseEntity configureDevice(@PathVariable Long id) {
+        try {
+            DeviceResponse response = new DeviceResponse();
+            response.setContent(service.configureDevice(id));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception exception) {
+            return handleBadRequest(new BadRequestException("Provided data is not correct!"));
+        }
     }
 
 
