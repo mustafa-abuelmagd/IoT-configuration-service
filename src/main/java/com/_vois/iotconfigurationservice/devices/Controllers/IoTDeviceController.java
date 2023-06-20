@@ -1,11 +1,12 @@
 package com._vois.iotconfigurationservice.devices.Controllers;
 
-import com._vois.iotconfigurationservice.devices.Services.IoTDeviceService;
 import com._vois.iotconfigurationservice.devices.Models.IoTDevice;
+import com._vois.iotconfigurationservice.devices.Services.IoTDeviceService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/devices")
@@ -21,6 +22,9 @@ public class IoTDeviceController {
 
         List<IoTDevice> devices = service.getAll();
         devices.sort(Comparator.comparingInt(IoTDevice::getPinCode));
+        devices = devices.stream()
+                .filter(device -> device.getStatus().equals("ACTIVE"))
+                .collect(Collectors.toList());
         return devices;
 
     }
