@@ -50,7 +50,7 @@ public class IoTDeviceController {
     }
 
     @PostMapping("/configure_device/{id}")
-    public IoTDevice configureDevice(@PathVariable long id) {
+    public IoTDevice configureDevice(@PathVariable Long id) {
         return service.configureDevice(id);
     }
 

@@ -61,7 +61,7 @@ public class IoTDeviceService {
     // Using a device pinCode, its status is set to ACTIVE and its temperature is set to a
     // random number between 0 and 10
     @Transactional
-    public IoTDevice configureDevice(long id) {
+    public IoTDevice configureDevice(Long id) {
         return repository.findById(id).map(device ->{
             device.setStatus("ACTIVE");
             device.setTemp(generateTemp());

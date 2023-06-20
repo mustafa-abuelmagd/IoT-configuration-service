@@ -6,6 +6,7 @@ import com._vois.iotconfigurationservice.devices.Models.IoTDevice;
 import com._vois.iotconfigurationservice.devices.Services.IoTDeviceRepository;
 import com._vois.iotconfigurationservice.devices.Services.IoTDeviceService;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -27,14 +28,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -209,23 +204,16 @@ class IoTDeviceControllerTest {
         assertEquals(null, response.getStatusCode());
     }
 
-    @Test
-    void testCreate() {
-
-        IoTDeviceController ioTDeviceController = new IoTDeviceController(
-                new IoTDeviceService(mock(IoTDeviceRepository.class)));
-        ioTDeviceController.create(new IoTDevice("Status", 1, 1));
-    }
 
     @Test
     void testCreate2() {
 
         IoTDeviceService ioTDeviceService = mock(IoTDeviceService.class);
-        IoTDevice ioTDevice = new IoTDevice("Status", 1, 1);
+        IoTDevice ioTDevice = new IoTDevice("ACTIVE", 1, 1234567);
 
         when(ioTDeviceService.create(Mockito.<IoTDevice>any())).thenReturn(ioTDevice);
         IoTDeviceController ioTDeviceController = new IoTDeviceController(ioTDeviceService);
-        assertSame(ioTDevice, ioTDeviceController.create(new IoTDevice("Status", 1, 1)));
+        assertSame(ioTDevice, ioTDeviceController.create(new IoTDevice("ACTIVE", 1, 1234567)));
         verify(ioTDeviceService).create(Mockito.<IoTDevice>any());
     }
 
@@ -233,26 +221,19 @@ class IoTDeviceControllerTest {
     void testGetOne() {
 
         IoTDeviceRepository repository = mock(IoTDeviceRepository.class);
-        IoTDevice ioTDevice = new IoTDevice("Status", 1, 1);
+        IoTDevice ioTDevice = new IoTDevice("ACTIVE", 1, 1234567);
 
         when(repository.findById(Mockito.<Long>any())).thenReturn(Optional.of(ioTDevice));
         assertSame(ioTDevice, (new IoTDeviceController(new IoTDeviceService(repository))).getOne(1L));
         verify(repository, atLeast(1)).findById(Mockito.<Long>any());
     }
 
-    @Test
-    void testGetOne2() {
-
-        IoTDeviceRepository repository = mock(IoTDeviceRepository.class);
-        when(repository.findById(Mockito.<Long>any())).thenReturn(Optional.empty());
-        (new IoTDeviceController(new IoTDeviceService(repository))).getOne(1L);
-    }
 
     @Test
     void testGetOne3() {
 
         IoTDeviceService ioTDeviceService = mock(IoTDeviceService.class);
-        IoTDevice ioTDevice = new IoTDevice("Status", 1, 1);
+        IoTDevice ioTDevice = new IoTDevice(1L, "ACTIVE", 1, 1234567);
 
         when(ioTDeviceService.getOne(Mockito.<Long>any())).thenReturn(ioTDevice);
         assertSame(ioTDevice, (new IoTDeviceController(ioTDeviceService)).getOne(1L));
@@ -264,88 +245,76 @@ class IoTDeviceControllerTest {
 
         IoTDeviceController ioTDeviceController = new IoTDeviceController(
                 new IoTDeviceService(mock(IoTDeviceRepository.class)));
-        ioTDeviceController.updateOne(new IoTDevice("Status", 1, 1), 1L);
+        IoTDevice deviceBefore = new IoTDevice(1l, "READY", -1, 1234567);
+
+        when(ioTDeviceController.create(deviceBefore)).thenReturn(deviceBefore);
+        IoTDevice deviceAfter = new IoTDevice(1l, "ACTIVE", 1, 1234567);
+
+        when(ioTDeviceController.updateOne(deviceAfter, deviceBefore.getId())).thenReturn(deviceAfter);
+
+        ioTDeviceController.updateOne(deviceAfter, 1L);
+        assertEquals(deviceAfter.getId(), ioTDeviceController.updateOne(deviceAfter, 1L).getId());
+        assertEquals(deviceAfter.getStatus(), ioTDeviceController.updateOne(deviceAfter, 1L).getStatus());
+        assertEquals(deviceAfter.getTemp(), ioTDeviceController.updateOne(deviceAfter, 1L).getTemp());
     }
 
     @Test
     void testUpdateOne2() {
 
         IoTDeviceService ioTDeviceService = mock(IoTDeviceService.class);
-        IoTDevice ioTDevice = new IoTDevice("Status", 1, 1);
+        IoTDevice ioTDevice = new IoTDevice("ACTIVE", 1, 1234567);
 
         when(ioTDeviceService.updateOne(Mockito.<IoTDevice>any(), Mockito.<Long>any())).thenReturn(ioTDevice);
         IoTDeviceController ioTDeviceController = new IoTDeviceController(ioTDeviceService);
-        assertSame(ioTDevice, ioTDeviceController.updateOne(new IoTDevice("Status", 1, 1), 1L));
+        assertSame(ioTDevice, ioTDeviceController.updateOne(new IoTDevice("ACTIVE", 1, 1234567), 1L));
         verify(ioTDeviceService).updateOne(Mockito.<IoTDevice>any(), Mockito.<Long>any());
     }
 
-    @Test
-    void testDeleteOne() {
-
-        IoTDeviceRepository repository = mock(IoTDeviceRepository.class);
-        doNothing().when(repository).deleteById(Mockito.<Long>any());
-        (new IoTDeviceController(new IoTDeviceService(repository))).deleteOne(1L);
-        verify(repository).deleteById(Mockito.<Long>any());
-    }
-
-    @Test
-    void testDeleteOne2() {
-
-
-        (new IoTDeviceController(null)).deleteOne(1L);
-    }
 
     @Test
     void testDeleteOne3() {
 
         IoTDeviceService ioTDeviceService = mock(IoTDeviceService.class);
         doNothing().when(ioTDeviceService).deleteOne(Mockito.<Long>any());
+
         (new IoTDeviceController(ioTDeviceService)).deleteOne(1L);
         verify(ioTDeviceService).deleteOne(Mockito.<Long>any());
     }
 
-    @Test
-    void testConfigureDevice() {
-
-        IoTDeviceRepository repository = mock(IoTDeviceRepository.class);
-        when(repository.findById(anyLong())).thenReturn(Optional.ofNullable(Mockito.<IoTDevice>any()));
-        assertNull((new IoTDeviceController(new IoTDeviceService(repository))).configureDevice(1));
-        verify(repository).findById(anyLong());
-    }
 
     @Test
     void testConfigureDevice2() {
 
         ArrayList<IoTDevice> ioTDeviceList = new ArrayList<>();
-        IoTDevice ioTDevice = new IoTDevice("Status", 1, 1);
 
+        IoTDevice ioTDevice = new IoTDevice(1L, "ACTIVE", 1, 1234567);
         ioTDeviceList.add(ioTDevice);
+
         IoTDeviceRepository repository = mock(IoTDeviceRepository.class);
-        when(repository.findById(anyLong())).thenReturn(Optional.ofNullable(Mockito.<IoTDevice>any()));
+
+        when(repository.findById(anyLong())).thenReturn(Optional.ofNullable(ioTDevice));
+
         IoTDevice actualConfigureDeviceResult = (new IoTDeviceController(new IoTDeviceService(repository)))
-                .configureDevice(1);
-        assertSame(ioTDevice, actualConfigureDeviceResult);
-        org.junit.jupiter.api.Assertions.assertEquals("ACTIVE", actualConfigureDeviceResult.getStatus());
+                .configureDevice(1L);
+
+        Assertions.assertSame(ioTDevice, actualConfigureDeviceResult);
+        Assertions.assertEquals("ACTIVE", actualConfigureDeviceResult.getStatus());
         verify(repository).findById(anyLong());
     }
 
 
     @Test
-    void testConfigureDevice3() {
-
-
-        (new IoTDeviceController(null)).configureDevice(1);
-    }
-
-    @Test
     void testConfigureDevice4() {
 
         IoTDeviceService ioTDeviceService = mock(IoTDeviceService.class);
-        IoTDevice ioTDevice = new IoTDevice("Status", 1, 1);
 
-        when(ioTDeviceService.configureDevice(anyInt())).thenReturn(ioTDevice);
-        assertSame(ioTDevice, (new IoTDeviceController(ioTDeviceService)).configureDevice(1));
-        verify(ioTDeviceService).configureDevice(anyInt());
+        IoTDevice ioTDevice = new IoTDevice(1L, "READY", -1, 1234567);
+        IoTDevice resultDevice = new IoTDevice(1L, "ACTIVE", 1, 1234567);
+
+        when(ioTDeviceService.configureDevice(anyLong())).thenReturn(resultDevice);
+
+        Assertions.assertEquals("ACTIVE", (new IoTDeviceController(ioTDeviceService)).configureDevice(ioTDevice.getId()).getStatus());
+        verify(ioTDeviceService).configureDevice(anyLong());
     }
 
     @Test

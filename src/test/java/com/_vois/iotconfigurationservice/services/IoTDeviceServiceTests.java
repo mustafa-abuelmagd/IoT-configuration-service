@@ -221,7 +221,7 @@ class IoTDeviceServiceTests {
         when(repository.findById(Mockito.<Long>any())).thenReturn(Optional.of(new IoTDevice("Status", 1, 1)));
 
         IoTDeviceService ioTDeviceService = new IoTDeviceService(repository);
-        IoTDevice newDevice = new IoTDevice("Status", 1, 1);
+        IoTDevice newDevice = new IoTDevice("ACTIVE", 1, 1);
 
         Assertions.assertNotNull(ioTDeviceService.updateOne(newDevice, 1L));
         verify(repository).findById(Mockito.<Long>any());
@@ -269,7 +269,7 @@ class IoTDeviceServiceTests {
 //    @Disabled
     void testConfigureDevice1() {
         when(repository.findById(Mockito.<Long>any())).thenThrow(new IllegalStateException("No device with this id"));
-        Assertions.assertThrows(IllegalStateException.class, () -> this.deviceService.configureDevice(15000));
+        Assertions.assertThrows(IllegalStateException.class, () -> this.deviceService.configureDevice(1500L));
         verify(repository).findById(Mockito.<Long>any());
     }
 
@@ -277,7 +277,7 @@ class IoTDeviceServiceTests {
 //    @Disabled
     void testConfigureDevice2() {
         when(repository.findById(Mockito.<Long>any())).thenThrow(new IllegalStateException("foo"));
-        Assertions.assertThrows(IllegalStateException.class, () -> this.deviceService.configureDevice(1));
+        Assertions.assertThrows(IllegalStateException.class, () -> this.deviceService.configureDevice(1L));
         verify(repository).findById(Mockito.<Long>any());
     }
 
