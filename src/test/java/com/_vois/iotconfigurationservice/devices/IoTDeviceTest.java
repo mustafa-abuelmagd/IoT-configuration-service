@@ -1,5 +1,6 @@
 package com._vois.iotconfigurationservice.devices;
 
+import com._vois.iotconfigurationservice.devices.Models.IoTDevice;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

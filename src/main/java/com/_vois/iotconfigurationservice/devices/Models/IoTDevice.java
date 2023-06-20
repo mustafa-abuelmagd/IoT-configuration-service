@@ -1,4 +1,4 @@
-package com._vois.iotconfigurationservice.devices;
+package com._vois.iotconfigurationservice.devices.Models;
 
 import jakarta.persistence.*;
 

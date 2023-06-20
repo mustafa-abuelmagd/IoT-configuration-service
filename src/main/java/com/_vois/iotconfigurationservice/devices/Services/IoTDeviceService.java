@@ -1,5 +1,8 @@
-package com._vois.iotconfigurationservice.devices;
+package com._vois.iotconfigurationservice.devices.Services;
 
+import com._vois.iotconfigurationservice.devices.Errors.BadRequestException;
+import com._vois.iotconfigurationservice.devices.Errors.DeviceNotFoundException;
+import com._vois.iotconfigurationservice.devices.Models.IoTDevice;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

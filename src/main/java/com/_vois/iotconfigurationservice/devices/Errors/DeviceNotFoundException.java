@@ -1,4 +1,4 @@
-package com._vois.iotconfigurationservice.devices;
+package com._vois.iotconfigurationservice.devices.Errors;
 
 public class DeviceNotFoundException extends RuntimeException{
     public DeviceNotFoundException(Long id){

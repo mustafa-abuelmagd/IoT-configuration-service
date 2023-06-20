@@ -1,4 +1,4 @@
-package com._vois.iotconfigurationservice.devices;
+package com._vois.iotconfigurationservice.devices.Errors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

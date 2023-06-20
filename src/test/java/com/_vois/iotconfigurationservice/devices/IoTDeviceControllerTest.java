@@ -1,6 +1,10 @@
 package com._vois.iotconfigurationservice.devices;
 
 import com._vois.iotconfigurationservice.IoTConfigurationServiceApplication;
+import com._vois.iotconfigurationservice.devices.Controllers.IoTDeviceController;
+import com._vois.iotconfigurationservice.devices.Models.IoTDevice;
+import com._vois.iotconfigurationservice.devices.Services.IoTDeviceRepository;
+import com._vois.iotconfigurationservice.devices.Services.IoTDeviceService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

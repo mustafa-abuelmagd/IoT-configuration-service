@@ -1,5 +1,7 @@
-package com._vois.iotconfigurationservice.devices;
+package com._vois.iotconfigurationservice.devices.Controllers;
 
+import com._vois.iotconfigurationservice.devices.Services.IoTDeviceService;
+import com._vois.iotconfigurationservice.devices.Models.IoTDevice;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
@@ -15,7 +17,7 @@ public class IoTDeviceController {
     }
 
     @GetMapping("/")
-    List<IoTDevice> all() {
+    public List<IoTDevice> all() {
 
         List<IoTDevice> devices = service.getAll();
         devices.sort(Comparator.comparingInt(IoTDevice::getPinCode));
@@ -24,27 +26,27 @@ public class IoTDeviceController {
     }
 
     @PostMapping("/")
-    IoTDevice create(@RequestBody IoTDevice device) {
+    public IoTDevice create(@RequestBody IoTDevice device) {
         return service.create(device);
     }
 
     @GetMapping("/{id}")
-    IoTDevice getOne(@PathVariable long id) {
+    public IoTDevice getOne(@PathVariable long id) {
         return service.getOne(id);
     }
 
     @PutMapping("/{id}")
-    IoTDevice updateOne(@RequestBody IoTDevice newDevice, @PathVariable long id) {
+    public IoTDevice updateOne(@RequestBody IoTDevice newDevice, @PathVariable long id) {
         return service.updateOne(newDevice, id);
     }
 
     @DeleteMapping("/{id}")
-    void deleteOne(@PathVariable long id) {
+    public void deleteOne(@PathVariable long id) {
         service.deleteOne(id);
     }
 
     @PostMapping("/configure_device/{id}")
-    IoTDevice configureDevice(@PathVariable long id) {
+    public IoTDevice configureDevice(@PathVariable long id) {
         return service.configureDevice(id);
     }
 

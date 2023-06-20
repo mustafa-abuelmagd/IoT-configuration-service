@@ -1,7 +1,11 @@
 package com._vois.iotconfigurationservice.services;
 
 import com._vois.iotconfigurationservice.IoTConfigurationServiceApplication;
-import com._vois.iotconfigurationservice.devices.*;
+import com._vois.iotconfigurationservice.devices.Errors.BadRequestException;
+import com._vois.iotconfigurationservice.devices.Errors.DeviceNotFoundException;
+import com._vois.iotconfigurationservice.devices.Models.IoTDevice;
+import com._vois.iotconfigurationservice.devices.Services.IoTDeviceRepository;
+import com._vois.iotconfigurationservice.devices.Services.IoTDeviceService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
