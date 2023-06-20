@@ -1,12 +1,18 @@
 package com._vois.iotconfigurationservice.devices.Controllers;
 
+import com._vois.iotconfigurationservice.devices.DTO.ListResponse;
+import com._vois.iotconfigurationservice.devices.Errors.BadRequestException;
 import com._vois.iotconfigurationservice.devices.Models.IoTDevice;
 import com._vois.iotconfigurationservice.devices.Services.IoTDeviceService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com._vois.iotconfigurationservice.devices.Errors.ErrorHandler.handleBadRequest;
 
 @RestController
 @RequestMapping("/api/v1/devices")
@@ -18,14 +24,22 @@ public class IoTDeviceController {
     }
 
     @GetMapping("/")
-    public List<IoTDevice> all() {
+    public ResponseEntity all() {
+        try {
+            List<IoTDevice> devices = service.getAll();
+            devices.sort(Comparator.comparingInt(IoTDevice::getPinCode));
+            devices = devices.stream()
+                    .filter(device -> device.getStatus().equals("ACTIVE"))
+                    .collect(Collectors.toList());
+            ListResponse listResponse = new ListResponse();
+            listResponse.setContent(devices);
+            listResponse.setTotalElements(devices.size());
+            return new ResponseEntity<>(listResponse, HttpStatus.OK);
 
-        List<IoTDevice> devices = service.getAll();
-        devices.sort(Comparator.comparingInt(IoTDevice::getPinCode));
-        devices = devices.stream()
-                .filter(device -> device.getStatus().equals("ACTIVE"))
-                .collect(Collectors.toList());
-        return devices;
+
+        } catch (Exception exception) {
+            return handleBadRequest(new BadRequestException("Provided data is not correct!"));
+        }
 
     }
 

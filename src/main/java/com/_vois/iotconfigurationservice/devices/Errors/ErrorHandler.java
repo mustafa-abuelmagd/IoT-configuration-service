@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.Date;
 
 @ControllerAdvice
-public class DeviceNotFoundAdvice {
+public class ErrorHandler {
     @ExceptionHandler(DeviceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public ResponseEntity<ErrorObject> handleDeviceNotFound(DeviceNotFoundException ex) {
+    public static ResponseEntity<ErrorObject> handleDeviceNotFound(DeviceNotFoundException ex) {
 
         ErrorObject errorObject = new ErrorObject();
 
@@ -25,9 +25,9 @@ public class DeviceNotFoundAdvice {
         return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(BadRequestException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ResponseEntity<ErrorObject> handleBadRequest(DeviceNotFoundException ex) {
+    public static ResponseEntity<ErrorObject> handleBadRequest(BadRequestException ex) {
 
         ErrorObject errorObject = new ErrorObject();
 

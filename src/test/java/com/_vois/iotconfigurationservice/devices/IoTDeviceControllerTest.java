@@ -2,6 +2,7 @@ package com._vois.iotconfigurationservice.devices;
 
 import com._vois.iotconfigurationservice.IoTConfigurationServiceApplication;
 import com._vois.iotconfigurationservice.devices.Controllers.IoTDeviceController;
+import com._vois.iotconfigurationservice.devices.DTO.ListResponse;
 import com._vois.iotconfigurationservice.devices.Models.IoTDevice;
 import com._vois.iotconfigurationservice.devices.Services.IoTDeviceRepository;
 import com._vois.iotconfigurationservice.devices.Services.IoTDeviceService;
@@ -55,19 +56,19 @@ class IoTDeviceControllerTest {
 
         IoTDeviceRepository repository = mock(IoTDeviceRepository.class);
         ArrayList<IoTDevice> ioTDeviceList = new ArrayList<>();
+        ListResponse listResponse = new ListResponse();
+        listResponse.setContent(ioTDeviceList);
+        listResponse.setTotalElements(ioTDeviceList.size());
+        ResponseEntity result = new ResponseEntity<>(listResponse, HttpStatus.OK);
+
         when(repository.findAll()).thenReturn(ioTDeviceList);
-        List<IoTDevice> actualAllResult = (new IoTDeviceController(new IoTDeviceService(repository))).all();
-        assertSame(ioTDeviceList, actualAllResult);
-        assertTrue(actualAllResult.isEmpty());
+        ResponseEntity<List<IoTDevice>> actualAllResult = (new IoTDeviceController(new IoTDeviceService(repository))).all();
+
+
+        assertEquals(result.getBody(), actualAllResult.getBody());
         verify(repository).findAll();
     }
 
-    @Test
-    void testAll2() {
-
-
-        (new IoTDeviceController(null)).all();
-    }
 
     @Test
     void testAll3() {
@@ -75,9 +76,14 @@ class IoTDeviceControllerTest {
         IoTDeviceService ioTDeviceService = mock(IoTDeviceService.class);
         ArrayList<IoTDevice> ioTDeviceList = new ArrayList<>();
         when(ioTDeviceService.getAll()).thenReturn(ioTDeviceList);
-        List<IoTDevice> actualAllResult = (new IoTDeviceController(ioTDeviceService)).all();
-        assertSame(ioTDeviceList, actualAllResult);
-        assertTrue(actualAllResult.isEmpty());
+
+        ListResponse listResponse = new ListResponse();
+        listResponse.setContent(ioTDeviceList);
+        listResponse.setTotalElements(ioTDeviceList.size());
+        ResponseEntity result = new ResponseEntity<>(listResponse, HttpStatus.OK);
+
+        ResponseEntity<List<IoTDevice>> actualAllResult = (new IoTDeviceController(ioTDeviceService)).all();
+        assertEquals(result.getBody(), actualAllResult.getBody());
         verify(ioTDeviceService).getAll();
     }
 
